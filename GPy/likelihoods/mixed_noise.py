@@ -3,9 +3,9 @@
 
 import numpy as np
 from scipy import stats, special
-import link_functions
-from likelihood import Likelihood
-from gaussian import Gaussian
+from . import link_functions
+from .likelihood import Likelihood
+from .gaussian import Gaussian
 from ..core.parameterization import Param
 from ..core.parameterization.transformations import Logexp
 from ..core.parameterization import Parameterized
@@ -24,7 +24,7 @@ class MixedNoise(Likelihood):
         assert all([isinstance(l, Gaussian) for l in self.likelihoods_list])
         ind = Y_metadata['output_index'].flatten()
         variance = np.zeros(ind.size)
-        for lik, j in zip(self.likelihoods_list, range(len(self.likelihoods_list))):
+        for lik, j in zip(self.likelihoods_list, list(range(len(self.likelihoods_list)))):
             variance[ind==j] = lik.variance
         return variance
 

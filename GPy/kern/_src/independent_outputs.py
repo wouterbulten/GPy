@@ -2,7 +2,7 @@
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 
-from kern import Kern, CombinationKernel
+from .kern import Kern, CombinationKernel
 import numpy as np
 import itertools
 
@@ -31,7 +31,7 @@ def index_to_slices(index):
     ind_ = np.hstack((ind,ind[0]+ind[-1]+1))
     switchpoints = np.nonzero(ind_ - np.roll(ind_,+1))[0]
 
-    [ret[ind_i].append(slice(*indexes_i)) for ind_i,indexes_i in zip(ind[switchpoints[:-1]],zip(switchpoints,switchpoints[1:]))]
+    [ret[ind_i].append(slice(*indexes_i)) for ind_i,indexes_i in zip(ind[switchpoints[:-1]],list(zip(switchpoints,switchpoints[1:])))]
     return ret
 
 class IndependentOutputs(CombinationKernel):
@@ -167,7 +167,7 @@ class Hierarchical(CombinationKernel):
         assert len(kernels) > 1
         self.levels = len(kernels) -1
         input_max = max([k.input_dim for k in kernels])
-        super(Hierarchical, self).__init__(kernels=kernels, extra_dims = range(input_max, input_max + len(kernels)-1), name=name)
+        super(Hierarchical, self).__init__(kernels=kernels, extra_dims = list(range(input_max, input_max + len(kernels)-1)), name=name)
 
     def K(self,X ,X2=None):
         K = self.parts[0].K(X, X2) # compute 'base' kern everywhere

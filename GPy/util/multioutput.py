@@ -22,7 +22,7 @@ def build_XY(input_list,output_list=None,index=None):
         assert len(index) == num_outputs
         I = np.hstack( [np.repeat(j,_x.shape[0]) for _x,j in zip(input_list,index)] )
     else:
-        I = np.hstack( [np.repeat(j,_x.shape[0]) for _x,j in zip(input_list,range(num_outputs))] )
+        I = np.hstack( [np.repeat(j,_x.shape[0]) for _x,j in zip(input_list,list(range(num_outputs)))] )
 
     X = np.vstack(input_list)
     X = np.hstack([X,I[:,None]])
@@ -32,7 +32,7 @@ def build_XY(input_list,output_list=None,index=None):
 def build_likelihood(Y_list,noise_index,likelihoods_list=None):
     Ny = len(Y_list)
     if likelihoods_list is None:
-       likelihoods_list = [GPy.likelihoods.Gaussian(name="Gaussian_noise_%s" %j) for y,j in zip(Y_list,range(Ny))]
+       likelihoods_list = [GPy.likelihoods.Gaussian(name="Gaussian_noise_%s" %j) for y,j in zip(Y_list,list(range(Ny)))]
     else:
         assert len(likelihoods_list) == Ny
     #likelihood = GPy.likelihoods.mixed_noise.MixedNoise(likelihoods_list=likelihoods_list, noise_index=noise_index)
@@ -51,7 +51,7 @@ def ICM(input_dim, num_outputs, kernel, W_rank=1,W=None,kappa=None,name='ICM'):
     :param W_rank: number tuples of the corregionalization parameters 'W'
     :type W_rank: integer
     """
-    if kernel.input_dim <> input_dim:
+    if kernel.input_dim != input_dim:
         kernel.input_dim = input_dim
         warnings.warn("kernel's input dimension overwritten to fit input_dim parameter.")
 
@@ -92,7 +92,7 @@ def Private(input_dim, num_outputs, kernel, output, kappa=None,name='X'):
     """
     K = ICM(input_dim,num_outputs,kernel,W_rank=1,kappa=kappa,name=name)
     K.B.W.fix(0)
-    _range = range(num_outputs)
+    _range = list(range(num_outputs))
     _range.pop(output)
     for j in _range:
         K.B.kappa[j] = 0

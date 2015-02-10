@@ -2,12 +2,12 @@
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 try:
-    import Tango
+    from . import Tango
     import pylab as pb
 except:
     pass
 import numpy as np
-from base_plots import gpplot, x_frame1D, x_frame2D
+from .base_plots import gpplot, x_frame1D, x_frame2D
 from ...models.gp_coregionalized_regression import GPCoregionalizedRegression
 from ...models.sparse_gp_coregionalized_regression import SparseGPCoregionalizedRegression
 from scipy import sparse
@@ -175,7 +175,7 @@ def plot_fit(model, plot_limits=None, which_data_rows='all',
             plots['inducing_inputs'] = ax.plot(Zu[:,free_dims[0]], Zu[:,free_dims[1]], 'wo')
 
     else:
-        raise NotImplementedError, "Cannot define a frame with more than two input dimensions"
+        raise NotImplementedError("Cannot define a frame with more than two input dimensions")
     return plots
 
 def plot_fit_f(model, *args, **kwargs):

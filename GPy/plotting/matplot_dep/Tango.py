@@ -114,7 +114,7 @@ def hex2rgb(hexcolor):
     r,g,b = [int(n,16) for n in hexcolor]
     return (r,g,b)
 
-colorsRGB = dict([(k,hex2rgb(i)) for k,i in colorsHex.items()])
+colorsRGB = dict([(k,hex2rgb(i)) for k,i in list(colorsHex.items())])
 
 cdict_RB = {'red' :((0.,colorsRGB['mediumRed'][0]/256.,colorsRGB['mediumRed'][0]/256.),
                      (.5,colorsRGB['mediumPurple'][0]/256.,colorsRGB['mediumPurple'][0]/256.),

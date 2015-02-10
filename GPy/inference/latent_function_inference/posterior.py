@@ -52,7 +52,7 @@ class Posterior(object):
                 or ((mean is not None) and (cov is not None)):
             pass # we have sufficient to compute the posterior
         else:
-            raise ValueError, "insufficient information to compute the posterior"
+            raise ValueError("insufficient information to compute the posterior")
 
         self._K_chol = K_chol
         self._K = K
@@ -107,7 +107,7 @@ class Posterior(object):
         if self._precision is None:
             cov = np.atleast_3d(self.covariance)
             self._precision = np.zeros(cov.shape) # if one covariance per dimension
-            for p in xrange(cov.shape[-1]):
+            for p in range(cov.shape[-1]):
                 self._precision[:,:,p] = pdinv(cov[:,:,p])[0]
         return self._precision
 
@@ -125,7 +125,7 @@ class Posterior(object):
             if self._woodbury_inv is not None:
                 winv = np.atleast_3d(self._woodbury_inv)
                 self._woodbury_chol = np.zeros(winv.shape)
-                for p in xrange(winv.shape[-1]):
+                for p in range(winv.shape[-1]):
                     self._woodbury_chol[:,:,p] = pdinv(winv[:,:,p])[2]
                 #Li = jitchol(self._woodbury_inv)
                 #self._woodbury_chol, _ = dtrtri(Li)
@@ -134,13 +134,13 @@ class Posterior(object):
                 #self._woodbury_chol = jitchol(W)
             #try computing woodbury chol from cov
             elif self._covariance is not None:
-                raise NotImplementedError, "TODO: check code here"
+                raise NotImplementedError("TODO: check code here")
                 B = self._K - self._covariance
                 tmp, _ = dpotrs(self.K_chol, B)
                 self._woodbury_inv, _ = dpotrs(self.K_chol, tmp.T)
                 _, _, self._woodbury_chol, _ = pdinv(self._woodbury_inv)
             else:
-                raise ValueError, "insufficient information to compute posterior"
+                raise ValueError("insufficient information to compute posterior")
         return self._woodbury_chol
 
     @property

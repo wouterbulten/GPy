@@ -3,9 +3,10 @@
 
 import itertools
 import numpy
+from functools import reduce
 np = numpy
-from parameter_core import Parameterizable, adjust_name_for_printing, Pickleable
-from observable_array import ObsAr
+from .parameter_core import Parameterizable, adjust_name_for_printing, Pickleable
+from .observable_array import ObsAr
 
 ###### printing
 __constraints_name__ = "Constraint"
@@ -155,7 +156,7 @@ class Param(Parameterizable, ObsAr):
     #===========================================================================
     @property
     def is_fixed(self):
-        from transformations import __fixed__
+        from .transformations import __fixed__
         return self.constraints[__fixed__].size == self.size
 
     def _get_original(self, param):
@@ -206,10 +207,10 @@ class Param(Parameterizable, ObsAr):
         return 0
     @property
     def _constraints_str(self):
-        return [' '.join(map(lambda c: str(c[0]) if c[1].size == self._realsize_ else "{" + str(c[0]) + "}", self.constraints.iteritems()))]
+        return [' '.join([str(c[0]) if c[1].size == self._realsize_ else "{" + str(c[0]) + "}" for c in iter(self.constraints.items())])]
     @property
     def _priors_str(self):
-        return [' '.join(map(lambda c: str(c[0]) if c[1].size == self._realsize_ else "{" + str(c[0]) + "}", self.priors.iteritems()))]
+        return [' '.join([str(c[0]) if c[1].size == self._realsize_ else "{" + str(c[0]) + "}" for c in iter(self.priors.items())])]
     @property
     def _ties_str(self):
         return ['']
@@ -236,7 +237,7 @@ class Param(Parameterizable, ObsAr):
             indices = np.rollaxis(indices, 0, indices.ndim)
         return indices
     def _max_len_names(self, gen, header):
-        gen = map(lambda x: " ".join(map(str, x)), gen)
+        gen = [" ".join(map(str, x)) for x in gen]
         return reduce(lambda a, b:max(a, len(b)), gen, len(header))
     def _max_len_values(self):
         return reduce(lambda a, b:max(a, len("{x:=.{0}g}".format(__precision__, x=b))), self.flat, len(self.hierarchy_name()))
@@ -261,7 +262,7 @@ class Param(Parameterizable, ObsAr):
         if constr_matrix is None: constr_matrix = self.constraints.properties_for(ravi)
         if prirs is None: prirs = self.priors.properties_for(ravi)
         if ties is None: ties = self._ties_for(ravi)
-        ties = [' '.join(map(lambda x: x, t)) for t in ties]
+        ties = [' '.join([x for x in t]) for t in ties]
         header_format = """
 <tr>
   <th><b>{i}</b></th>
@@ -278,7 +279,7 @@ class Param(Parameterizable, ObsAr):
 .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:2px 3px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#999;color:#fff;background-color:#26ADE4;}
 .tg .tg-left{font-family:"Courier New", Courier, monospace !important;;text-align:left}
 .tg .tg-right{font-family:"Courier New", Courier, monospace !important;;text-align:right}
-</style>"""] + ['<table class="tg">'] + [header] + ["<tr><td class=tg-left>{i}</td><td  class=tg-right>{x}</td><td class=tg-left>{c}</td><td class=tg-left>{p}</td><td class=tg-left>{t}</td></tr>".format(x=x, c=" ".join(map(str, c)), p=" ".join(map(str, p)), t=(t or ''), i=i) for i, x, c, t, p in itertools.izip(indices, vals, constr_matrix, ties, prirs)] + ["</table>"])
+</style>"""] + ['<table class="tg">'] + [header] + ["<tr><td class=tg-left>{i}</td><td  class=tg-right>{x}</td><td class=tg-left>{c}</td><td class=tg-left>{p}</td><td class=tg-left>{t}</td></tr>".format(x=x, c=" ".join(map(str, c)), p=" ".join(map(str, p)), t=(t or ''), i=i) for i, x, c, t, p in zip(indices, vals, constr_matrix, ties, prirs)] + ["</table>"])
 
     def __str__(self, constr_matrix=None, indices=None, prirs=None, ties=None, lc=None, lx=None, li=None, lp=None, lt=None, only_name=False):
         filter_ = self._current_slice_
@@ -288,7 +289,7 @@ class Param(Parameterizable, ObsAr):
         if constr_matrix is None: constr_matrix = self.constraints.properties_for(ravi)
         if prirs is None: prirs = self.priors.properties_for(ravi)
         if ties is None: ties = self._ties_for(ravi)
-        ties = [' '.join(map(lambda x: x, t)) for t in ties]
+        ties = [' '.join([x for x in t]) for t in ties]
         if lc is None: lc = self._max_len_names(constr_matrix, __constraints_name__)
         if lx is None: lx = self._max_len_values()
         if li is None: li = self._max_len_index(indices)
@@ -299,7 +300,7 @@ class Param(Parameterizable, ObsAr):
         if only_name: header = header_format.format(lc, lx, li, lt, lp, ' ', x=self.hierarchy_name(), c=sep*lc, i=sep*li, t=sep*lt, p=sep*lp)  # nice header for printing
         else: header = header_format.format(lc, lx, li, lt, lp, ' ', x=self.hierarchy_name(), c=__constraints_name__, i=__index_name__, t=__tie_name__, p=__priors_name__)  # nice header for printing
         if not ties: ties = itertools.cycle([''])
-        return "\n".join([header] + ["  {i!s:^{3}s}  |  {x: >{1}.{2}g}  |  {c:^{0}s}  |  {p:^{5}s}  |  {t:^{4}s}  ".format(lc, lx, __precision__, li, lt, lp, x=x, c=" ".join(map(str, c)), p=" ".join(map(str, p)), t=(t or ''), i=i) for i, x, c, t, p in itertools.izip(indices, vals, constr_matrix, ties, prirs)])  # return all the constraints with right indices
+        return "\n".join([header] + ["  {i!s:^{3}s}  |  {x: >{1}.{2}g}  |  {c:^{0}s}  |  {p:^{5}s}  |  {t:^{4}s}  ".format(lc, lx, __precision__, li, lt, lp, x=x, c=" ".join(map(str, c)), p=" ".join(map(str, p)), t=(t or ''), i=i) for i, x, c, t, p in zip(indices, vals, constr_matrix, ties, prirs)])  # return all the constraints with right indices
         # except: return super(Param, self).__str__()
 
 class ParamConcatenation(object):
@@ -312,7 +313,7 @@ class ParamConcatenation(object):
         See :py:class:`GPy.core.parameter.Param` for more details on constraining.
         """
         # self.params = params
-        from lists_and_dicts import ArrayList
+        from .lists_and_dicts import ArrayList
         self.params = ArrayList([])
         for p in params:
             for p in p.flattened_parameters:
@@ -335,7 +336,7 @@ class ParamConcatenation(object):
                     level += 1
                     parent = parent._parent_
         import operator
-        self.parents = map(lambda x: x[0], sorted(parents.iteritems(), key=operator.itemgetter(1)))
+        self.parents = [x[0] for x in sorted(iter(parents.items()), key=operator.itemgetter(1))]
     #===========================================================================
     # Get/set items, enable broadcasting
     #===========================================================================
@@ -346,9 +347,9 @@ class ParamConcatenation(object):
         return ParamConcatenation(params)
     def __setitem__(self, s, val, update=True):
         if isinstance(val, ParamConcatenation):
-            val = val.values()
+            val = list(val.values())
         ind = numpy.zeros(sum(self._param_sizes), dtype=bool); ind[s] = True;
-        vals = self.values(); vals[s] = val
+        vals = list(self.values()); vals[s] = val
         for p, ps in zip(self.params, self._param_slices_):
             p.flat[ind[ps]] = vals[ps]
         if update:
@@ -415,27 +416,27 @@ class ParamConcatenation(object):
         return self.params[0]._highest_parent_._checkgrad(self, verbose, step, tolerance)
     #checkgrad.__doc__ = Gradcheckable.checkgrad.__doc__
 
-    __lt__ = lambda self, val: self.values() < val
-    __le__ = lambda self, val: self.values() <= val
-    __eq__ = lambda self, val: self.values() == val
-    __ne__ = lambda self, val: self.values() != val
-    __gt__ = lambda self, val: self.values() > val
-    __ge__ = lambda self, val: self.values() >= val
+    __lt__ = lambda self, val: list(self.values()) < val
+    __le__ = lambda self, val: list(self.values()) <= val
+    __eq__ = lambda self, val: list(self.values()) == val
+    __ne__ = lambda self, val: list(self.values()) != val
+    __gt__ = lambda self, val: list(self.values()) > val
+    __ge__ = lambda self, val: list(self.values()) >= val
     def __str__(self, *args, **kwargs):
         def f(p):
             ind = p._raveled_index()
             return p.constraints.properties_for(ind), p._ties_for(ind), p.priors.properties_for(ind)
         params = self.params
-        constr_matrices, ties_matrices, prior_matrices = zip(*map(f, params))
+        constr_matrices, ties_matrices, prior_matrices = list(zip(*list(map(f, params))))
         indices = [p._indices() for p in params]
-        lc = max([p._max_len_names(cm, __constraints_name__) for p, cm in itertools.izip(params, constr_matrices)])
+        lc = max([p._max_len_names(cm, __constraints_name__) for p, cm in zip(params, constr_matrices)])
         lx = max([p._max_len_values() for p in params])
-        li = max([p._max_len_index(i) for p, i in itertools.izip(params, indices)])
-        lt = max([p._max_len_names(tm, __tie_name__) for p, tm in itertools.izip(params, ties_matrices)])
-        lp = max([p._max_len_names(pm, __constraints_name__) for p, pm in itertools.izip(params, prior_matrices)])
+        li = max([p._max_len_index(i) for p, i in zip(params, indices)])
+        lt = max([p._max_len_names(tm, __tie_name__) for p, tm in zip(params, ties_matrices)])
+        lp = max([p._max_len_names(pm, __constraints_name__) for p, pm in zip(params, prior_matrices)])
         strings = []
         start = True
-        for p, cm, i, tm, pm in itertools.izip(params,constr_matrices,indices,ties_matrices,prior_matrices):
+        for p, cm, i, tm, pm in zip(params,constr_matrices,indices,ties_matrices,prior_matrices):
             strings.append(p.__str__(constr_matrix=cm, indices=i, prirs=pm, ties=tm, lc=lc, lx=lx, li=li, lp=lp, lt=lt, only_name=(1-start)))
             start = False
         return "\n".join(strings)
@@ -443,40 +444,40 @@ class ParamConcatenation(object):
         return "\n".join(map(repr,self.params))
 
     def __ilshift__(self, *args, **kwargs):
-        self[:] = np.ndarray.__ilshift__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__ilshift__(list(self.values()), *args, **kwargs)
 
     def __irshift__(self, *args, **kwargs):
-        self[:] = np.ndarray.__irshift__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__irshift__(list(self.values()), *args, **kwargs)
 
     def __ixor__(self, *args, **kwargs):
-        self[:] = np.ndarray.__ixor__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__ixor__(list(self.values()), *args, **kwargs)
 
     def __ipow__(self, *args, **kwargs):
-        self[:] = np.ndarray.__ipow__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__ipow__(list(self.values()), *args, **kwargs)
 
     def __ifloordiv__(self, *args, **kwargs):
-        self[:] = np.ndarray.__ifloordiv__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__ifloordiv__(list(self.values()), *args, **kwargs)
 
     def __isub__(self, *args, **kwargs):
-        self[:] = np.ndarray.__isub__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__isub__(list(self.values()), *args, **kwargs)
 
     def __ior__(self, *args, **kwargs):
-        self[:] = np.ndarray.__ior__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__ior__(list(self.values()), *args, **kwargs)
 
     def __itruediv__(self, *args, **kwargs):
-        self[:] = np.ndarray.__itruediv__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__itruediv__(list(self.values()), *args, **kwargs)
 
     def __idiv__(self, *args, **kwargs):
-        self[:] = np.ndarray.__idiv__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__idiv__(list(self.values()), *args, **kwargs)
 
     def __iand__(self, *args, **kwargs):
-        self[:] = np.ndarray.__iand__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__iand__(list(self.values()), *args, **kwargs)
 
     def __imod__(self, *args, **kwargs):
-        self[:] = np.ndarray.__imod__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__imod__(list(self.values()), *args, **kwargs)
 
     def __iadd__(self, *args, **kwargs):
-        self[:] = np.ndarray.__iadd__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__iadd__(list(self.values()), *args, **kwargs)
 
     def __imul__(self, *args, **kwargs):
-        self[:] = np.ndarray.__imul__(self.values(), *args, **kwargs)
+        self[:] = np.ndarray.__imul__(list(self.values()), *args, **kwargs)

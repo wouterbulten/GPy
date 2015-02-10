@@ -3,7 +3,7 @@
 
 
 import numpy as np
-from domains import _POSITIVE,_NEGATIVE, _BOUNDED
+from .domains import _POSITIVE,_NEGATIVE, _BOUNDED
 import weakref
 
 import sys
@@ -70,7 +70,7 @@ class Logexp(Transformation):
         return np.einsum('i,i->i', df, np.where(f>_lim_val, 1., 1. - np.exp(-f)))
     def initialize(self, f):
         if np.any(f < 0.):
-            print "Warning: changing parameters to satisfy constraints"
+            print("Warning: changing parameters to satisfy constraints")
         return np.abs(f)
     def __str__(self):
         return '+ve'
@@ -124,7 +124,7 @@ class NormalTheta(Transformation):
 
     def initialize(self, f):
         if np.any(f[self.var_indices] < 0.):
-            print "Warning: changing parameters to satisfy constraints"
+            print("Warning: changing parameters to satisfy constraints")
             f[self.var_indices] = np.abs(f[self.var_indices])
         return f
 
@@ -170,7 +170,7 @@ class NormalNaturalAntti(NormalTheta):
 
     def initialize(self, f):
         if np.any(f[self.var_indices] < 0.):
-            print "Warning: changing parameters to satisfy constraints"
+            print("Warning: changing parameters to satisfy constraints")
             f[self.var_indices] = np.abs(f[self.var_indices])
         return f
 
@@ -211,7 +211,7 @@ class NormalEta(Transformation):
 
     def initialize(self, f):
         if np.any(f[self.var_indices] < 0.):
-            print "Warning: changing parameters to satisfy constraints"
+            print("Warning: changing parameters to satisfy constraints")
             f[self.var_indices] = np.abs(f[self.var_indices])
         return f
 
@@ -332,7 +332,7 @@ class LogexpNeg(Transformation):
         return np.einsum('i,i->i', df, np.where(f>_lim_val, -1, -1 + np.exp(-f)))
     def initialize(self, f):
         if np.any(f < 0.):
-            print "Warning: changing parameters to satisfy constraints"
+            print("Warning: changing parameters to satisfy constraints")
         return np.abs(f)
     def __str__(self):
         return '+ve'
@@ -384,7 +384,7 @@ class LogexpClipped(Logexp):
         return np.einsum('i,i->i', df, gf) # np.where(f < self.lower, 0, gf)
     def initialize(self, f):
         if np.any(f < 0.):
-            print "Warning: changing parameters to satisfy constraints"
+            print("Warning: changing parameters to satisfy constraints")
         return np.abs(f)
     def __str__(self):
         return '+ve_c'
@@ -400,7 +400,7 @@ class Exponent(Transformation):
         return np.einsum('i,i->i', df, f)
     def initialize(self, f):
         if np.any(f < 0.):
-            print "Warning: changing parameters to satisfy constraints"
+            print("Warning: changing parameters to satisfy constraints")
         return np.abs(f)
     def __str__(self):
         return '+ve'
@@ -458,7 +458,7 @@ class Logistic(Transformation):
         return np.einsum('i,i->i', df, (f - self.lower) * (self.upper - f) / self.difference)
     def initialize(self, f):
         if np.any(np.logical_or(f < self.lower, f > self.upper)):
-            print "Warning: changing parameters to satisfy constraints"
+            print("Warning: changing parameters to satisfy constraints")
         #return np.where(np.logical_or(f < self.lower, f > self.upper), self.f(f * 0.), f)
         #FIXME: Max, zeros_like right?
         return np.where(np.logical_or(f < self.lower, f > self.upper), self.f(np.zeros_like(f)), f)

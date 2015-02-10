@@ -102,7 +102,7 @@ class Eq_ode1(Kernpart):
             param_names += ['kappa_%i'%i for i in range(self.output_dim)]
         param_names += ['decay_%i'%i for i in range(1,self.output_dim)]
         if self.delay is not None:
-            param_names += ['delay_%i'%i for i in 1+range(1,self.output_dim)]
+            param_names += ['delay_%i'%i for i in 1+list(range(1,self.output_dim))]
         param_names+= ['lengthscale'] 
         return param_names
 
@@ -475,7 +475,7 @@ class Eq_ode1(Kernpart):
 """
 
         if stationary:
-            raise NotImplementedError, "Error, stationary version of this covariance not yet implemented."
+            raise NotImplementedError("Error, stationary version of this covariance not yet implemented.")
         # Vector of decays and delays associated with each output.
         Decay = self.decay[index]
         Decay2 = self.decay[index2]

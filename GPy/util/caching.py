@@ -2,6 +2,7 @@
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 from ..core.parameterization.observable import Observable
 import collections, weakref
+from functools import reduce
 
 class Cacher(object):
     def __init__(self, operation, limit=5, ignore_args=(), force_kwargs=()):
@@ -37,7 +38,7 @@ class Cacher(object):
 
     def combine_inputs(self, args, kw, ignore_args):
         "Combines the args and kw in a unique way, such that ordering of kwargs does not lead to recompute"
-        inputs= args + tuple(c[1] for c in sorted(kw.items(), key=lambda x: x[0]))
+        inputs= args + tuple(c[1] for c in sorted(list(kw.items()), key=lambda x: x[0]))
         # REMOVE the ignored arguments from input and PREVENT it from being checked!!!
         return [a for i,a in enumerate(inputs) if i not in ignore_args]
 
@@ -139,7 +140,7 @@ class Cacher(object):
         """
         Totally reset the cache
         """
-        [a().remove_observer(self, self.on_cache_changed) if (a() is not None) else None for [a, _] in self.cached_input_ids.values()]
+        [a().remove_observer(self, self.on_cache_changed) if (a() is not None) else None for [a, _] in list(self.cached_input_ids.values())]
         self.cached_input_ids = {}
         self.cached_outputs = {}
         self.inputs_changed = {}
@@ -148,10 +149,10 @@ class Cacher(object):
         return Cacher(self.operation, self.limit, self.ignore_args, self.force_kwargs)
 
     def __getstate__(self, memo=None):
-        raise NotImplementedError, "Trying to pickle Cacher object with function {}, pickling functions not possible.".format(str(self.operation))
+        raise NotImplementedError("Trying to pickle Cacher object with function {}, pickling functions not possible.".format(str(self.operation)))
 
     def __setstate__(self, memo=None):
-        raise NotImplementedError, "Trying to pickle Cacher object with function {}, pickling functions not possible.".format(str(self.operation))
+        raise NotImplementedError("Trying to pickle Cacher object with function {}, pickling functions not possible.".format(str(self.operation)))
 
     @property
     def __name__(self):

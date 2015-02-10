@@ -3,7 +3,7 @@
 
 
 try:
-    import Tango
+    from . import Tango
     import pylab as pb
 except:
     pass
@@ -36,7 +36,7 @@ def gpplot(x, mu, lower, upper, edgecol=Tango.colorsHex['darkBlue'], fillcol=Tan
 
     #here's the box
     kwargs['linewidth']=0.5
-    if not 'alpha' in kwargs.keys():
+    if not 'alpha' in list(kwargs.keys()):
         kwargs['alpha'] = 0.3
     plots.append(axes.fill(np.hstack((x,x[::-1])),np.hstack((upper,lower[::-1])),color=fillcol,**kwargs))
 
@@ -133,7 +133,7 @@ def x_frame1D(X,plot_limits=None,resolution=None):
     elif len(plot_limits)==2:
         xmin, xmax = plot_limits
     else:
-        raise ValueError, "Bad limits for plotting"
+        raise ValueError("Bad limits for plotting")
 
     Xnew = np.linspace(xmin,xmax,resolution or 200)[:,None]
     return Xnew, xmin, xmax
@@ -149,7 +149,7 @@ def x_frame2D(X,plot_limits=None,resolution=None):
     elif len(plot_limits)==2:
         xmin, xmax = plot_limits
     else:
-        raise ValueError, "Bad limits for plotting"
+        raise ValueError("Bad limits for plotting")
 
     resolution = resolution or 50
     xx,yy = np.mgrid[xmin[0]:xmax[0]:1j*resolution,xmin[1]:xmax[1]:1j*resolution]

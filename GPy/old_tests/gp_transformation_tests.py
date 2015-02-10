@@ -34,7 +34,7 @@ class TestTransformations(object):
 
     @with_setup(setUp, tearDown)
     def t_dtransf_df(self, transformation, f):
-        print "\n{}".format(inspect.stack()[0][3])
+        print("\n{}".format(inspect.stack()[0][3]))
         grad = GradientChecker(transformation.transf, transformation.dtransf_df, f, 'f')
         grad.randomize()
         grad.checkgrad(verbose=1)
@@ -42,7 +42,7 @@ class TestTransformations(object):
 
     @with_setup(setUp, tearDown)
     def t_d2transf_df2(self, transformation, f):
-        print "\n{}".format(inspect.stack()[0][3])
+        print("\n{}".format(inspect.stack()[0][3]))
         grad = GradientChecker(transformation.dtransf_df, transformation.d2transf_df2, f, 'f')
         grad.randomize()
         grad.checkgrad(verbose=1)
@@ -50,7 +50,7 @@ class TestTransformations(object):
 
     @with_setup(setUp, tearDown)
     def t_d3transf_df3(self, transformation, f):
-        print "\n{}".format(inspect.stack()[0][3])
+        print("\n{}".format(inspect.stack()[0][3]))
         grad = GradientChecker(transformation.d2transf_df2, transformation.d3transf_df3, f, 'f')
         grad.randomize()
         grad.checkgrad(verbose=1)

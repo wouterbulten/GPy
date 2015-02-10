@@ -12,7 +12,7 @@ except:
 
 def plot_optimizer(optimizer):
     if optimizer.trace == None:
-        print "No trace present so I can't plot it. Please check that the optimizer actually supplies a trace."
+        print("No trace present so I can't plot it. Please check that the optimizer actually supplies a trace.")
     else:
         pb.figure()
         pb.plot(optimizer.trace)
@@ -23,7 +23,7 @@ def plot_sgd_traces(optimizer):
     pb.figure()
     pb.subplot(211)
     pb.title('Parameters')
-    for k in optimizer.param_traces.keys():
+    for k in list(optimizer.param_traces.keys()):
         pb.plot(optimizer.param_traces[k], label=k)
     pb.legend(loc=0)
     pb.subplot(212)

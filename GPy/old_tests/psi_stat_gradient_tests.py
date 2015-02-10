@@ -74,45 +74,45 @@ class DPsiStatTest(unittest.TestCase):
             m = PsiStatModel('psi0', X=self.X, X_variance=self.X_var, Z=self.Z,\
                              num_inducing=self.num_inducing, kernel=k)
             m.randomize()
-            assert m.checkgrad(), "{} x psi0".format("+".join(map(lambda x: x.name, k._parameters_)))
+            assert m.checkgrad(), "{} x psi0".format("+".join([x.name for x in k._parameters_]))
 
     def testPsi1(self):
         for k in self.kernels:
             m = PsiStatModel('psi1', X=self.X, X_variance=self.X_var, Z=self.Z,
                      num_inducing=self.num_inducing, kernel=k)
             m.randomize()
-            assert m.checkgrad(), "{} x psi1".format("+".join(map(lambda x: x.name, k._parameters_)))
+            assert m.checkgrad(), "{} x psi1".format("+".join([x.name for x in k._parameters_]))
 
     def testPsi2_lin(self):
         k = self.kernels[0]
         m = PsiStatModel('psi2', X=self.X, X_variance=self.X_var, Z=self.Z,
                  num_inducing=self.num_inducing, kernel=k)
         m.randomize()
-        assert m.checkgrad(), "{} x psi2".format("+".join(map(lambda x: x.name, k._parameters_)))
+        assert m.checkgrad(), "{} x psi2".format("+".join([x.name for x in k._parameters_]))
     def testPsi2_lin_bia(self):
         k = self.kernels[3]
         m = PsiStatModel('psi2', X=self.X, X_variance=self.X_var, Z=self.Z,
                      num_inducing=self.num_inducing, kernel=k)
         m.randomize()
-        assert m.checkgrad(), "{} x psi2".format("+".join(map(lambda x: x.name, k._parameters_)))
+        assert m.checkgrad(), "{} x psi2".format("+".join([x.name for x in k._parameters_]))
     def testPsi2_rbf(self):
         k = self.kernels[1]
         m = PsiStatModel('psi2', X=self.X, X_variance=self.X_var, Z=self.Z,
                      num_inducing=self.num_inducing, kernel=k)
         m.randomize()
-        assert m.checkgrad(), "{} x psi2".format("+".join(map(lambda x: x.name, k._parameters_)))
+        assert m.checkgrad(), "{} x psi2".format("+".join([x.name for x in k._parameters_]))
     def testPsi2_rbf_bia(self):
         k = self.kernels[-1]
         m = PsiStatModel('psi2', X=self.X, X_variance=self.X_var, Z=self.Z,
                      num_inducing=self.num_inducing, kernel=k)
         m.randomize()
-        assert m.checkgrad(), "{} x psi2".format("+".join(map(lambda x: x.name, k._parameters_)))
+        assert m.checkgrad(), "{} x psi2".format("+".join([x.name for x in k._parameters_]))
     def testPsi2_bia(self):
         k = self.kernels[2]
         m = PsiStatModel('psi2', X=self.X, X_variance=self.X_var, Z=self.Z,
                      num_inducing=self.num_inducing, kernel=k)
         m.randomize()
-        assert m.checkgrad(), "{} x psi2".format("+".join(map(lambda x: x.name, k._parameters_)))
+        assert m.checkgrad(), "{} x psi2".format("+".join([x.name for x in k._parameters_]))
 
 
 if __name__ == "__main__":

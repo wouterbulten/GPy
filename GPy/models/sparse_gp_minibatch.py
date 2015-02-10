@@ -54,8 +54,8 @@ Created on 3 Nov 2014
                 inference_method = var_dtc.VarDTC(limit=1 if not missing_data else Y.shape[1])
             else:
                 #inference_method = ??
-                raise NotImplementedError, "what to do what to do?"
-            print "defaulting to ", inference_method, "for latent function inference"
+                raise NotImplementedError("what to do what to do?")
+            print("defaulting to ", inference_method, "for latent function inference")
 
         self.kl_factr = 1.
         self.Z = Param('inducing inputs', Z)
@@ -85,13 +85,13 @@ Created on 3 Nov 2014
             overall = self.Y_normalized.shape[1]
             m_f = lambda i: "Precomputing Y for missing data: {: >7.2%}".format(float(i+1)/overall)
             message = m_f(-1)
-            print message,
-            for d in xrange(overall):
+            print(message, end=' ')
+            for d in range(overall):
                 self.Ylist.append(self.Y_normalized[self.ninan[:, d], d][:, None])
-                print ' '*(len(message)+1) + '\r',
+                print(' '*(len(message)+1) + '\r', end=' ')
                 message = m_f(d)
-                print message,
-            print ''
+                print(message, end=' ')
+            print('')
 
         self.posterior = None
 
@@ -185,12 +185,12 @@ Created on 3 Nov 2014
             if the key exists the update rule is:def df(x):
             full_values[key][value_indices[key]] += current_values[key]
         """
-        for key in current_values.keys():
-            if value_indices is not None and value_indices.has_key(key):
+        for key in list(current_values.keys()):
+            if value_indices is not None and key in value_indices:
                 index = value_indices[key]
             else:
                 index = slice(None)
-            if full_values.has_key(key):
+            if key in full_values:
                 full_values[key][index] += current_values[key]
             else:
                 full_values[key] = current_values[key]
@@ -246,15 +246,15 @@ Created on 3 Nov 2014
         if not self.stochastics:
             m_f = lambda i: "Inference with missing_data: {: >7.2%}".format(float(i+1)/self.output_dim)
             message = m_f(-1)
-            print message,
+            print(message, end=' ')
 
         for d in self.stochastics.d:
             ninan = self.ninan[:, d]
 
             if not self.stochastics:
-                print ' '*(len(message)) + '\r',
+                print(' '*(len(message)) + '\r', end=' ')
                 message = m_f(d)
-                print message,
+                print(message, end=' ')
 
             posterior, log_marginal_likelihood, \
                 grad_dict, current_values, value_indices = self._inner_parameters_changed(
@@ -273,7 +273,7 @@ Created on 3 Nov 2014
             woodbury_vector[:, d:d+1] = posterior.woodbury_vector
             self._log_marginal_likelihood += log_marginal_likelihood
         if not self.stochastics:
-            print ''
+            print('')
 
         if self.posterior is None:
             self.posterior = Posterior(woodbury_inv=woodbury_inv, woodbury_vector=woodbury_vector,
@@ -341,7 +341,7 @@ Created on 3 Nov 2014
             Kx = kern.psi1(self.Z, Xnew)
             mu = np.dot(Kx, self.posterior.woodbury_vector)
             if full_cov:
-                raise NotImplementedError, "TODO"
+                raise NotImplementedError("TODO")
             else:
                 Kxx = kern.psi0(self.Z, Xnew)
                 psi2 = kern.psi2(self.Z, Xnew)

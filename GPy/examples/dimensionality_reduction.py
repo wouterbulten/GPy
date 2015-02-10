@@ -184,7 +184,7 @@ def bgplvm_oil(optimize=True, verbose=1, plot=True, N=200, Q=7, num_inducing=40,
         data_show = GPy.plotting.matplot_dep.visualize.vector_show((m.Y[0, :]))
         lvm_visualizer = GPy.plotting.matplot_dep.visualize.lvm_dimselect(m.X.mean.values[0:1, :],  # @UnusedVariable
             m, data_show, latent_axes=latent_axes, sense_axes=sense_axes, labels=m.data_labels)
-        raw_input('Press enter to finish')
+        input('Press enter to finish')
         plt.close(fig)
     return m
 
@@ -210,7 +210,7 @@ def ssgplvm_oil(optimize=True, verbose=1, plot=True, N=200, Q=7, num_inducing=40
         data_show = GPy.plotting.matplot_dep.visualize.vector_show((m.Y[0, :]))
         lvm_visualizer = GPy.plotting.matplot_dep.visualize.lvm_dimselect(m.X.mean.values[0:1, :],  # @UnusedVariable
             m, data_show, latent_axes=latent_axes, sense_axes=sense_axes, labels=m.data_labels)
-        raw_input('Press enter to finish')
+        input('Press enter to finish')
         plt.close(fig)
     return m
 
@@ -241,7 +241,7 @@ def _simulate_matern(D1, D2, D3, N, num_inducing, plot_sim=False):
         fig.clf()
         ax = fig.add_subplot(2, 1, 1)
         labls = slist_names
-        for S, lab in itertools.izip(slist, labls):
+        for S, lab in zip(slist, labls):
             ax.plot(S, label=lab)
         ax.legend()
         for i, Y in enumerate(Ylist):
@@ -286,7 +286,7 @@ def _simulate_sincos(D1, D2, D3, N, num_inducing, plot_sim=False):
         fig.clf()
         ax = fig.add_subplot(2, 1, 1)
         labls = slist_names
-        for S, lab in itertools.izip(slist, labls):
+        for S, lab in zip(slist, labls):
             ax.plot(S, label=lab)
         ax.legend()
         for i, Y in enumerate(Ylist):
@@ -333,7 +333,7 @@ def bgplvm_simulation(optimize=True, verbose=1,
     m.likelihood.variance = .1
 
     if optimize:
-        print "Optimizing model:"
+        print("Optimizing model:")
         m.optimize('bfgs', messages=verbose, max_iters=max_iters,
                    gtol=.05)
     if plot:
@@ -358,7 +358,7 @@ def ssgplvm_simulation(optimize=True, verbose=1,
     m.likelihood.variance = .1
 
     if optimize:
-        print "Optimizing model:"
+        print("Optimizing model:")
         m.optimize('scg', messages=verbose, max_iters=max_iters,
                    gtol=.05)
     if plot:
@@ -388,7 +388,7 @@ def bgplvm_simulation_missing_data(optimize=True, verbose=1,
     m.Yreal = Y
 
     if optimize:
-        print "Optimizing model:"
+        print("Optimizing model:")
         m.optimize('bfgs', messages=verbose, max_iters=max_iters,
                    gtol=.05)
     if plot:
@@ -411,7 +411,7 @@ def mrd_simulation(optimize=True, verbose=True, plot=True, plot_sim=True, **kw):
     m['.*noise'] = [Y.var() / 40. for Y in Ylist]
 
     if optimize:
-        print "Optimizing Model:"
+        print("Optimizing Model:")
         m.optimize(messages=verbose, max_iters=8e3)
     if plot:
         m.X.plot("MRD Latent Space 1D")
@@ -439,7 +439,7 @@ def mrd_simulation_missing_data(optimize=True, verbose=True, plot=True, plot_sim
             initx="random", initz='permute', **kw)
 
     if optimize:
-        print "Optimizing Model:"
+        print("Optimizing Model:")
         m.optimize('bfgs', messages=verbose, max_iters=8e3, gtol=.1)
     if plot:
         m.X.plot("MRD Latent Space 1D")
@@ -467,7 +467,7 @@ def brendan_faces(optimize=True, verbose=True, plot=True):
         y = m.Y[0, :]
         data_show = GPy.plotting.matplot_dep.visualize.image_show(y[None, :], dimensions=(20, 28), transpose=True, order='F', invert=False, scale=False)
         lvm = GPy.plotting.matplot_dep.visualize.lvm(m.X.mean[0, :].copy(), m, data_show, ax)
-        raw_input('Press enter to finish')
+        input('Press enter to finish')
 
     return m
 
@@ -489,7 +489,7 @@ def olivetti_faces(optimize=True, verbose=True, plot=True):
         y = m.Y[0, :]
         data_show = GPy.plotting.matplot_dep.visualize.image_show(y[None, :], dimensions=(112, 92), transpose=False, invert=False, scale=False)
         lvm = GPy.plotting.matplot_dep.visualize.lvm(m.X.mean[0, :].copy(), m, data_show, ax)
-        raw_input('Press enter to finish')
+        input('Press enter to finish')
 
     return m
 
@@ -524,7 +524,7 @@ def stick(kernel=None, optimize=True, verbose=True, plot=True):
         y = m.Y[0, :]
         data_show = GPy.plotting.matplot_dep.visualize.stick_show(y[None, :], connect=data['connect'])
         lvm_visualizer = GPy.plotting.matplot_dep.visualize.lvm(m.X[:1, :].copy(), m, data_show, latent_axes=ax)
-        raw_input('Press enter to finish')
+        input('Press enter to finish')
         lvm_visualizer.close()
         data_show.close()
     return m
@@ -545,7 +545,7 @@ def bcgplvm_linear_stick(kernel=None, optimize=True, verbose=True, plot=True):
         y = m.likelihood.Y[0, :]
         data_show = GPy.plotting.matplot_dep.visualize.stick_show(y[None, :], connect=data['connect'])
         GPy.plotting.matplot_dep.visualize.lvm(m.X[0, :].copy(), m, data_show, ax)
-        raw_input('Press enter to finish')
+        input('Press enter to finish')
 
     return m
 
@@ -603,7 +603,7 @@ def stick_bgplvm(model=None, optimize=True, verbose=True, plot=True):
     try:
         if optimize: m.optimize('bfgs', messages=verbose, max_iters=5e3, bfgs_factor=10)
     except KeyboardInterrupt:
-        print "Keyboard interrupt, continuing to plot and return"
+        print("Keyboard interrupt, continuing to plot and return")
 
     if plot:
         fig, (latent_axes, sense_axes) = plt.subplots(1, 2)
@@ -614,7 +614,7 @@ def stick_bgplvm(model=None, optimize=True, verbose=True, plot=True):
         dim_select = GPy.plotting.matplot_dep.visualize.lvm_dimselect(m.X.mean[:1, :].copy(), m, data_show, latent_axes=latent_axes, sense_axes=sense_axes)
         fig.canvas.draw()
         fig.canvas.show()
-        raw_input('Press enter to finish')
+        input('Press enter to finish')
 
     return m
 
@@ -638,7 +638,7 @@ def cmu_mocap(subject='35', motion=['01'], in_place=True, optimize=True, verbose
         y = m.Y[0, :]
         data_show = GPy.plotting.matplot_dep.visualize.skeleton_show(y[None, :], data['skel'])
         lvm_visualizer = GPy.plotting.matplot_dep.visualize.lvm(m.X[0].copy(), m, data_show, latent_axes=ax)
-        raw_input('Press enter to finish')
+        input('Press enter to finish')
         lvm_visualizer.close()
         data_show.close()
 
@@ -653,7 +653,7 @@ def ssgplvm_simulation_linear():
     def sample_X(Q, pi):
         x = np.empty(Q)
         dies = np.random.rand(Q)
-        for q in xrange(Q):
+        for q in range(Q):
             if dies[q] < pi:
                 x[q] = np.random.randn()
             else:
@@ -663,7 +663,7 @@ def ssgplvm_simulation_linear():
     Y = np.empty((N, D))
     X = np.empty((N, Q))
     # Generate data from random sampled weight matrices
-    for n in xrange(N):
+    for n in range(N):
         X[n] = sample_X(Q, pi)
         w = np.random.randn(D, Q)
         Y[n] = np.dot(w, X[n])

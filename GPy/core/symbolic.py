@@ -11,6 +11,7 @@ from sympy.utilities.lambdify import lambdastr, _imp_namespace, _get_namespace
 from sympy.utilities.iterables import numbered_symbols
 import scipy
 import GPy
+from functools import reduce
 
 
 def getFromDict(dataDict, mapList):
@@ -68,7 +69,7 @@ class Symbolic_core():
     def _set_expressions(self, expressions):
         """Extract expressions and variables from the user provided expressions."""
         self.expressions = {}
-        for key, item in expressions.items():
+        for key, item in list(expressions.items()):
             self.expressions[key] = {'function': item}
 
     def _set_variables(self, cacheable):
@@ -79,7 +80,7 @@ class Symbolic_core():
         self.cacheable = cacheable
         self.variables = {}
         vars = []
-        for expression in self.expressions.values():
+        for expression in list(self.expressions.values()):
             vars += extract_vars(expression['function'])
         # inputs are assumed to be those things that are
         # cacheable. I.e. those things that aren't stored within the
@@ -106,7 +107,7 @@ class Symbolic_core():
                 derivative_arguments += self.variables[derivative]
 
             # Do symbolic work to compute derivatives.        
-            for key, func in self.expressions.items():
+            for key, func in list(self.expressions.items()):
                 # if func['function'].is_Matrix:
                 #     rows = func['function'].shape[0]
                 #     cols = func['function'].shape[1]
@@ -123,7 +124,7 @@ class Symbolic_core():
             val = 1.0
             # TODO: improve approach for initializing parameters.
             if parameters is not None:
-                if parameters.has_key(theta.name):
+                if theta.name in parameters:
                     val = parameters[theta.name]
             # Add parameter.
             
@@ -142,7 +143,7 @@ class Symbolic_core():
         for var, code in self.variable_sort(self.code['parameters_changed']):
             self._set_attribute(var, eval(code, self.namespace))
 
-        for var, value in kwargs.items():
+        for var, value in list(kwargs.items()):
             # update their cached values
             if value is not None:
                 if var == 'X' or var == 'F' or var == 'M':
@@ -176,7 +177,7 @@ class Symbolic_core():
         return gradient
         
     def eval_gradients_X(self, function, partial, **kwargs):
-        if kwargs.has_key('X'):
+        if 'X' in kwargs:
             gradients_X = np.zeros_like(kwargs['X'])
         self.eval_update_cache(**kwargs)
         for i, theta in enumerate(self.variables['X']):
@@ -223,7 +224,7 @@ class Symbolic_core():
 
     def code_gradients_cacheable(self, function, variable):
         if variable not in self.cacheable:
-            raise RuntimeError, variable + ' must be a cacheable.'
+            raise RuntimeError(variable + ' must be a cacheable.')
         lcode = 'gradients_' + variable + ' = np.zeros_like(' + variable + ')\n'
         lcode += 'self.update_cache(' + ', '.join(self.cacheable) + ')\n'
         for i, theta in enumerate(self.variables[variable]):
@@ -257,14 +258,14 @@ class Symbolic_core():
         self.expression_list = [] # code arrives in dictionary, but is passed in this list
         self.expression_keys = [] # Keep track of the dictionary keys.
         self.expression_order = [] # This may be unecessary. It's to give ordering for cse
-        for fname, fexpressions in self.expressions.items():
-            for type, texpressions in fexpressions.items():
+        for fname, fexpressions in list(self.expressions.items()):
+            for type, texpressions in list(fexpressions.items()):
                 if type == 'function':
                     self.expression_list.append(texpressions)            
                     self.expression_keys.append([fname, type])
                     self.expression_order.append(1) 
                 elif type[-10:] == 'derivative':
-                    for dtype, expression in texpressions.items():
+                    for dtype, expression in list(texpressions.items()):
                         self.expression_list.append(expression)
                         self.expression_keys.append([fname, type, dtype])
                         if type[:-10] == 'first_' or type[:-10] == '':
@@ -280,7 +281,7 @@ class Symbolic_core():
 
         # This step may be unecessary.
         # Not 100% sure if the sub expression elimination is order sensitive. This step orders the list with the 'function' code first and derivatives after.
-        self.expression_order, self.expression_list, self.expression_keys = zip(*sorted(zip(self.expression_order, self.expression_list, self.expression_keys)))
+        self.expression_order, self.expression_list, self.expression_keys = list(zip(*sorted(zip(self.expression_order, self.expression_list, self.expression_keys))))
 
     def extract_sub_expressions(self, cache_prefix='cache', sub_prefix='sub', prefix='XoXoXoX'):
         # Do the common sub expression elimination.
@@ -349,7 +350,7 @@ class Symbolic_core():
         def match_key(expr):
             if type(expr) is dict:
                 code = {}
-                for key in expr.keys():
+                for key in list(expr.keys()):
                     code[key] = match_key(expr[key])
             else:
                 arg_list = [e for e in expr.atoms() if e.is_Symbol]
@@ -371,7 +372,7 @@ class Symbolic_core():
     def _print_code(self, code):
         """Prepare code for string writing."""
         # This needs a rewrite --- it doesn't check for match clashes! So sub11 would be replaced by sub1 before being replaced with sub11!!
-        for key in self.variables.keys():
+        for key in list(self.variables.keys()):
             for arg in self.variables[key]:
                 code = code.replace(arg.name, 'self.'+arg.name)
         return code
@@ -405,7 +406,7 @@ class Symbolic_core():
                 if var_name == var.name:
                     expr = expr.subs(var, sub)
                     break
-        for m, r in function_substitutes.iteritems():
+        for m, r in function_substitutes.items():
             expr = expr.replace(m, r)#normcdfln, lambda arg : sym.log(normcdf(arg)))
         return expr.simplify()
 
@@ -417,4 +418,4 @@ class Symbolic_core():
             else:
                 return x[0]
             
-        return sorted(var_dict.iteritems(), key=sort_key, reverse=reverse)
+        return sorted(iter(var_dict.items()), key=sort_key, reverse=reverse)

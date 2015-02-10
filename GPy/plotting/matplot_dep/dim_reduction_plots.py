@@ -2,12 +2,12 @@
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
 import numpy as np
-from latent_space_visualizations.controllers.imshow_controller import ImshowController,ImAnnotateController
+from .latent_space_visualizations.controllers.imshow_controller import ImshowController,ImAnnotateController
 from ...core.parameterization.variational import VariationalPosterior
 from .base_plots import x_frame2D
 import itertools
 try:
-    import Tango
+    from . import Tango
     from matplotlib.cm import get_cmap
     import pylab as pb
 except:
@@ -27,7 +27,7 @@ def most_significant_input_dimensions(model, which_indices):
             try:
                 input_1, input_2 = np.argsort(model.input_sensitivity())[::-1][:2]
             except:
-                raise ValueError, "cannot automatically determine which dimensions to plot, please pass 'which_indices'"
+                raise ValueError("cannot automatically determine which dimensions to plot, please pass 'which_indices'")
     else:
         input_1, input_2 = which_indices
     return input_1, input_2
@@ -62,7 +62,7 @@ def plot_latent(model, labels=None, which_indices=None,
 
 
     if X.shape[0] > 1000:
-        print "Warning: subsampling X, as it has more samples then 1000. X.shape={!s}".format(X.shape)
+        print("Warning: subsampling X, as it has more samples then 1000. X.shape={!s}".format(X.shape))
         subsample = np.random.choice(X.shape[0], size=1000, replace=False)
         X = X[subsample]
         labels = labels[subsample]
@@ -133,7 +133,7 @@ def plot_latent(model, labels=None, which_indices=None,
         try:
             xmin, xmax, ymin, ymax = plot_limits
         except (TypeError, ValueError) as e:
-            raise e.__class__, "Wrong plot limits: {} given -> need (xmin, xmax, ymin, ymax)".format(plot_limits)
+            raise e.__class__("Wrong plot limits: {} given -> need (xmin, xmax, ymin, ymax)".format(plot_limits))
     view = ImshowController(ax, plot_function,
                             (xmin, ymin, xmax, ymax),
                             resolution, aspect=aspect, interpolation='bilinear',
@@ -154,8 +154,8 @@ def plot_latent(model, labels=None, which_indices=None,
         elif type(ul) is np.int64:
             this_label = 'class %i' % ul
         else:
-            this_label = unicode(ul)
-        m = marker.next()
+            this_label = str(ul)
+        m = next(marker)
 
         index = np.nonzero(labels == ul)[0]
         if model.input_dim == 1:
@@ -187,15 +187,15 @@ def plot_latent(model, labels=None, which_indices=None,
         fig.tight_layout()
         fig.canvas.draw()
     except Exception as e:
-        print "Could not invoke tight layout: {}".format(e)
+        print("Could not invoke tight layout: {}".format(e))
         pass
 
     if updates:
         try:
             ax.figure.canvas.show()
         except Exception as e:
-            print "Could not invoke show: {}".format(e)
-        raw_input('Enter to continue')
+            print("Could not invoke show: {}".format(e))
+        input('Enter to continue')
         view.deactivate()
     return ax
 
@@ -246,7 +246,7 @@ def plot_magnification(model, labels=None, which_indices=None,
             this_label = 'class %i' % ul
         else:
             this_label = 'class %i' % i
-        m = marker.next()
+        m = next(marker)
 
         index = np.nonzero(labels == ul)[0]
         if model.input_dim == 1:
@@ -273,7 +273,7 @@ def plot_magnification(model, labels=None, which_indices=None,
 
     if updates:
         fig.canvas.show()
-        raw_input('Enter to continue')
+        input('Enter to continue')
 
     pb.title('Magnification Factor')
     return ax
@@ -286,7 +286,7 @@ def plot_steepest_gradient_map(model, fignum=None, ax=None, which_indices=None, 
     X = np.zeros((resolution ** 2, model.input_dim))
     indices = np.r_[:X.shape[0]]
     if labels is None:
-        labels = range(model.output_dim)
+        labels = list(range(model.output_dim))
 
     def plot_function(x):
         X[:, significant_dims] = x
@@ -312,7 +312,7 @@ def plot_steepest_gradient_map(model, fignum=None, ax=None, which_indices=None, 
             this_label = 'class %i' % ul
         else:
             this_label = 'class %i' % i
-        m = marker.next()
+        m = next(marker)
         index = np.nonzero(data_labels == ul)[0]
         x = model.X[index, input_1]
         y = model.X[index, input_2]
@@ -332,7 +332,7 @@ def plot_steepest_gradient_map(model, fignum=None, ax=None, which_indices=None, 
     ax.figure.tight_layout()
     if updates:
         pb.show()
-        clear = raw_input('Enter to continue')
+        clear = input('Enter to continue')
         if clear.lower() in 'yes' or clear == '':
             controller.deactivate()
     return controller.view

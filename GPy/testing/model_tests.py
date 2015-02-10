@@ -25,14 +25,14 @@ class MiscTests(unittest.TestCase):
         mu_hat = k.K(self.X_new, self.X).dot(Kinv).dot(m.Y_normalized)
 
         mu, covar = m._raw_predict(self.X_new, full_cov=True)
-        self.assertEquals(mu.shape, (self.N_new, self.D))
-        self.assertEquals(covar.shape, (self.N_new, self.N_new))
+        self.assertEqual(mu.shape, (self.N_new, self.D))
+        self.assertEqual(covar.shape, (self.N_new, self.N_new))
         np.testing.assert_almost_equal(K_hat, covar)
         np.testing.assert_almost_equal(mu_hat, mu)
 
         mu, var = m._raw_predict(self.X_new)
-        self.assertEquals(mu.shape, (self.N_new, self.D))
-        self.assertEquals(var.shape, (self.N_new, 1))
+        self.assertEqual(mu.shape, (self.N_new, self.D))
+        self.assertEqual(var.shape, (self.N_new, 1))
         np.testing.assert_almost_equal(np.diag(K_hat)[:, None], var)
         np.testing.assert_almost_equal(mu_hat, mu)
 
@@ -48,14 +48,14 @@ class MiscTests(unittest.TestCase):
         K_hat = k.K(self.X_new) - k.K(self.X_new, Z).dot(Kinv).dot(k.K(Z, self.X_new))
 
         mu, covar = m._raw_predict(self.X_new, full_cov=True)
-        self.assertEquals(mu.shape, (self.N_new, self.D))
-        self.assertEquals(covar.shape, (self.N_new, self.N_new))
+        self.assertEqual(mu.shape, (self.N_new, self.D))
+        self.assertEqual(covar.shape, (self.N_new, self.N_new))
         np.testing.assert_almost_equal(K_hat, covar)
         # np.testing.assert_almost_equal(mu_hat, mu)
 
         mu, var = m._raw_predict(self.X_new)
-        self.assertEquals(mu.shape, (self.N_new, self.D))
-        self.assertEquals(var.shape, (self.N_new, 1))
+        self.assertEqual(mu.shape, (self.N_new, self.D))
+        self.assertEqual(var.shape, (self.N_new, 1))
         np.testing.assert_almost_equal(np.diag(K_hat)[:, None], var)
         # np.testing.assert_almost_equal(mu_hat, mu)
 
@@ -64,7 +64,7 @@ class MiscTests(unittest.TestCase):
         m2 = GPy.models.GPRegression(self.X, self.Y)
         np.testing.assert_equal(m.log_likelihood(), m2.log_likelihood())
         m.randomize()
-        m2[:] = m[''].values()
+        m2[:] = list(m[''].values())
         np.testing.assert_almost_equal(m.log_likelihood(), m2.log_likelihood())
         m.randomize()
         m2[''] = m[:]
@@ -147,25 +147,25 @@ class MiscTests(unittest.TestCase):
         m2.kern[''] = m.kern['']
         np.testing.assert_almost_equal(m.log_likelihood(), m2.log_likelihood())
         m.kern.randomize()
-        m2.kern[:] = m.kern[''].values()
+        m2.kern[:] = list(m.kern[''].values())
         np.testing.assert_almost_equal(m.log_likelihood(), m2.log_likelihood())
 
     def test_big_model(self):
         m = GPy.examples.dimensionality_reduction.mrd_simulation(optimize=0, plot=0, plot_sim=0)
         m.X.fix()
-        print m
+        print(m)
         m.unfix()
         m.checkgrad()
-        print m
+        print(m)
         m.fix()
-        print m
+        print(m)
         m.inducing_inputs.unfix()
-        print m
+        print(m)
         m.checkgrad()
         m.unfix()
         m.checkgrad()
         m.checkgrad()
-        print m
+        print(m)
 
     def test_model_set_params(self):
         m = GPy.models.GPRegression(self.X, self.Y)
@@ -176,14 +176,14 @@ class MiscTests(unittest.TestCase):
         m['.*var'] -= .1
         np.testing.assert_equal(m.kern.lengthscale, lengthscale)
         m.optimize()
-        print m
+        print(m)
 
     def test_model_optimize(self):
         X = np.random.uniform(-3., 3., (20, 1))
         Y = np.sin(X) + np.random.randn(20, 1) * 0.05
         m = GPy.models.GPRegression(X, Y)
         m.optimize()
-        print m
+        print(m)
 
 class GradientTests(np.testing.TestCase):
     def setUp(self):
@@ -505,5 +505,5 @@ class GradientTests(np.testing.TestCase):
 
 
 if __name__ == "__main__":
-    print "Running unit tests, please be (very) patient..."
+    print("Running unit tests, please be (very) patient...")
     unittest.main()

@@ -72,7 +72,7 @@ if __name__ == "__main__":
 #     f = rosen
 #     df = rosen_der
     x0 = (numpy.random.randn(N) * .5) + numpy.ones(N)
-    print x0
+    print(x0)
 
     opt = CGD()
 
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     xopts = [x0.copy()]
     optplts, = ax.plot3D([x0[0]], [x0[1]], zs=f(x0), marker='', color='r')
 
-    raw_input("enter to start optimize")
+    input("enter to start optimize")
     res = [0]
 
     def callback(*r):

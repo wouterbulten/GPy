@@ -88,7 +88,7 @@ class MLP(Mapping):
         W = self.W[0]
         bias = self.bias[0]
         self.activation[0] = np.dot(X,W) + bias
-        for W, bias, index in zip(self.W[1:-1], self.bias[1:-1], range(1, len(self.activation))):
+        for W, bias, index in zip(self.W[1:-1], self.bias[1:-1], list(range(1, len(self.activation)))):
             self.activation[index] = np.dot(np.tanh(self.activation[index-1]), W)+bias
 
     def df_dtheta(self, dL_df, X):

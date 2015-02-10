@@ -1,7 +1,7 @@
 # Copyright (c) 2014, GPy authors (see AUTHORS.txt).
 # Licensed under the BSD 3-clause license (see LICENSE.txt)
 
-from posterior import Posterior
+from .posterior import Posterior
 from ...util.linalg import jitchol, backsub_both_sides, tdot, dtrtrs, dtrtri,pdinv
 from ...util import diag
 from ...core.parameterization.variational import VariationalPosterior
@@ -92,7 +92,7 @@ class VarDTC_minibatch(LatentFunctionInference):
         psi0_full = 0.
         YRY_full = 0.
 
-        for n_start in xrange(0,num_data,batchsize):
+        for n_start in range(0,num_data,batchsize):
             n_end = min(batchsize+n_start, num_data)
             if batchsize==num_data:
                 Y_slice = Y
@@ -381,7 +381,7 @@ def update_gradients(model, mpi_comm=None):
     # Gather the gradients from multiple MPI nodes
     if mpi_comm != None:
         if het_noise:
-            raise "het_noise not implemented!"
+            raise Exception("het_noise not implemented!")
         kern_grad_all = kern_grad.copy()
         Z_grad_all = model.Z.gradient.copy()
         mpi_comm.Allreduce([kern_grad, MPI.DOUBLE], [kern_grad_all, MPI.DOUBLE])
@@ -462,7 +462,7 @@ def update_gradients_sparsegp(model, mpi_comm=None):
     # Gather the gradients from multiple MPI nodes
     if mpi_comm != None:
         if het_noise:
-            raise "het_noise not implemented!"
+            raise Exception("het_noise not implemented!")
         kern_grad_all = kern_grad.copy()
         Z_grad_all = model.Z.gradient.copy()
         mpi_comm.Allreduce([kern_grad, MPI.DOUBLE], [kern_grad_all, MPI.DOUBLE])

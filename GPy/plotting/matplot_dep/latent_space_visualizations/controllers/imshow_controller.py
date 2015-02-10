@@ -3,7 +3,7 @@ Created on 24 Jul 2013
 
 @author: maxz
 '''
-from axis_event_controller import BufferedAxisChangedController
+from .axis_event_controller import BufferedAxisChangedController
 import itertools
 import numpy
 
@@ -61,7 +61,7 @@ class ImAnnotateController(ImshowController):
         xoffset, yoffset = self._offsets(xmin, xmax, ymin, ymax)
         xlin = numpy.linspace(xmin, xmax, self.resolution, endpoint=False)
         ylin = numpy.linspace(ymin, ymax, self.resolution, endpoint=False)
-        for [[i, x], [j, y]], text in itertools.izip(itertools.product(enumerate(xlin), enumerate(ylin[::-1])), view[1:]):
+        for [[i, x], [j, y]], text in zip(itertools.product(enumerate(xlin), enumerate(ylin[::-1])), view[1:]):
             text.set_x(x + xoffset)
             text.set_y(y + yoffset)
             text.set_text("{}".format(X[1][j, i]))

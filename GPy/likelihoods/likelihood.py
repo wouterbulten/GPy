@@ -4,7 +4,7 @@
 import numpy as np
 from scipy import stats,special
 import scipy as sp
-import link_functions
+from . import link_functions
 from ..util.misc import chain_1, chain_2, chain_3
 from scipy.integrate import quad
 import warnings
@@ -92,7 +92,7 @@ class Likelihood(Parameterized):
                 return self.pdf(f_star, y)*np.exp(-(1./(2*v))*np.square(m-f_star))
             return f
 
-        scaled_p_ystar, accuracy = zip(*[quad(integral_generator(y, m, v), -np.inf, np.inf) for y, m, v in zip(y_test.flatten(), mu_star.flatten(), var_star.flatten())])
+        scaled_p_ystar, accuracy = list(zip(*[quad(integral_generator(y, m, v), -np.inf, np.inf) for y, m, v in zip(y_test.flatten(), mu_star.flatten(), var_star.flatten())]))
         scaled_p_ystar = np.array(scaled_p_ystar).reshape(-1,1)
         p_ystar = scaled_p_ystar/np.sqrt(2*np.pi*var_star)
         return np.log(p_ystar)
@@ -204,7 +204,7 @@ class Likelihood(Parameterized):
 
     def _conditional_mean(self, f):
         """Quadrature calculation of the conditional mean: E(Y_star|f)"""
-        raise NotImplementedError, "implement this function to make predictions"
+        raise NotImplementedError("implement this function to make predictions")
 
     def predictive_variance(self, mu,variance, predictive_mean=None, Y_metadata=None):
         """

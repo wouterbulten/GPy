@@ -62,7 +62,7 @@ Examples
 
 """
 
-from __future__ import division, print_function
+
 
 import sys
 import re
@@ -124,7 +124,7 @@ class NetpbmFile(object):
             setattr(self, attr, None)
         if arg is None:
             self._fromdata([], **kwargs)
-        elif isinstance(arg, basestring):
+        elif isinstance(arg, str):
             self._fh = open(arg, 'rb')
             self._filename = arg
             self._fromfile(self._fh, **kwargs)
@@ -186,7 +186,7 @@ class NetpbmFile(object):
         self.magicnum = b'P7'
         for group in regroups[1:]:
             key, value = group.split()
-            setattr(self, unicode(key).lower(), int(value))
+            setattr(self, str(key).lower(), int(value))
         matches = re.findall(b"(TUPLTYPE\s+\w+)", self.header)
         self.tupltypes = [s.split(None, 1)[1] for s in matches]
 
@@ -280,7 +280,7 @@ class NetpbmFile(object):
                 "WIDTH %i" % self.width,
                 "DEPTH %i" % self.depth,
                 "MAXVAL %i" % self.maxval,
-                "\n".join("TUPLTYPE %s" % unicode(i) for i in self.tupltypes),
+                "\n".join("TUPLTYPE %s" % str(i) for i in self.tupltypes),
                 "ENDHDR\n"))
         elif self.maxval == 1:
             header = "P4 %i %i\n" % (self.width, self.height)
@@ -294,12 +294,12 @@ class NetpbmFile(object):
 
     def __str__(self):
         """Return information about instance."""
-        return unicode(self.header)
+        return str(self.header)
 
 
 if sys.version_info[0] > 2:
-    basestring = str
-    unicode = lambda x: str(x, 'ascii')
+    str = str
+    str = lambda x: str(x, 'ascii')
 
 if __name__ == "__main__":
     # Show images specified on command line or all images in current directory
@@ -326,6 +326,6 @@ if __name__ == "__main__":
             img = img[0]
         cmap = 'gray' if pam.maxval > 1 else 'binary'
         pyplot.imshow(img, cmap, interpolation='nearest')
-        pyplot.title("%s %s %s %s" % (fname, unicode(pam.magicnum),
+        pyplot.title("%s %s %s %s" % (fname, str(pam.magicnum),
                                       _shape, img.dtype))
         pyplot.show()

@@ -3,7 +3,8 @@
 
 import numpy
 from numpy.lib.function_base import vectorize
-from lists_and_dicts import IntArrayDict
+from .lists_and_dicts import IntArrayDict
+from functools import reduce
 
 def extract_properties_to_index(index, props):
     prop_index = dict()
@@ -13,7 +14,7 @@ def extract_properties_to_index(index, props):
             ind.append(index[i])
             prop_index[c] = ind
 
-    for c, i in prop_index.items():
+    for c, i in list(prop_index.items()):
         prop_index[c] = numpy.array(i, dtype=int)
 
     return prop_index
@@ -62,20 +63,20 @@ class ParameterIndexOperations(object):
     def __init__(self, constraints=None):
         self._properties = IntArrayDict()
         if constraints is not None:
-            for t, i in constraints.iteritems():
+            for t, i in constraints.items():
                 self.add(t, i)
 
     def iteritems(self):
-        return self._properties.iteritems()
+        return iter(self._properties.items())
 
     def items(self):
-        return self._properties.items()
+        return list(self._properties.items())
 
     def properties(self):
-        return self._properties.keys()
+        return list(self._properties.keys())
 
     def iterproperties(self):
-        return self._properties.iterkeys()
+        return iter(self._properties.keys())
 
     def shift_right(self, start, size):
         for ind in self.iterindices():
@@ -83,7 +84,7 @@ class ParameterIndexOperations(object):
             ind[toshift] += size
 
     def shift_left(self, start, size):
-        for v, ind in self.items():
+        for v, ind in list(self.items()):
             todelete = (ind>=start) * (ind<start+size)
             if todelete.size != 0:
                 ind = ind[~todelete]
@@ -101,10 +102,10 @@ class ParameterIndexOperations(object):
         return reduce(lambda a,b: a+b.size, self.iterindices(), 0)
 
     def iterindices(self):
-        return self._properties.itervalues()
+        return iter(self._properties.values())
 
     def indices(self):
-        return self._properties.values()
+        return list(self._properties.values())
 
     def properties_for(self, index):
         """
@@ -150,14 +151,14 @@ class ParameterIndexOperations(object):
         return numpy.array([]).astype(int)
 
     def update(self, parameter_index_view, offset=0):
-        for i, v in parameter_index_view.iteritems():
+        for i, v in parameter_index_view.items():
             self.add(i, v+offset)
 
     def copy(self):
         return self.__deepcopy__(None)
 
     def __deepcopy__(self, memo):
-        return ParameterIndexOperations(dict(self.iteritems()))
+        return ParameterIndexOperations(dict(iter(self.items())))
 
     def __getitem__(self, prop):
         return self._properties[prop]
@@ -197,20 +198,20 @@ class ParameterIndexOperationsView(object):
 
 
     def iteritems(self):
-        for i, ind in self._param_index_ops.iteritems():
+        for i, ind in self._param_index_ops.items():
             ind2 = self._filter_index(ind)
             if ind2.size > 0:
                 yield i, ind2
 
     def items(self):
-        return [[i,v] for i,v in self.iteritems()]
+        return [[i,v] for i,v in self.items()]
 
     def properties(self):
         return [i for i in self.iterproperties()]
 
 
     def iterproperties(self):
-        for i, _ in self.iteritems():
+        for i, _ in self.items():
             yield i
 
 
@@ -221,7 +222,7 @@ class ParameterIndexOperationsView(object):
         self._param_index_ops.shift_left(start+self._offset, size)
 
     def clear(self):
-        for i, ind in self.items():
+        for i, ind in list(self.items()):
             self._param_index_ops.remove(i, ind+self._offset)
 
     @property
@@ -230,7 +231,7 @@ class ParameterIndexOperationsView(object):
 
 
     def iterindices(self):
-        for _, ind in self.iteritems():
+        for _, ind in self.items():
             yield ind
 
 
@@ -286,10 +287,10 @@ class ParameterIndexOperationsView(object):
 
     def __str__(self, *args, **kwargs):
         import pprint
-        return pprint.pformat(dict(self.iteritems()))
+        return pprint.pformat(dict(iter(self.items())))
 
     def update(self, parameter_index_view, offset=0):
-        for i, v in parameter_index_view.iteritems():
+        for i, v in parameter_index_view.items():
             self.add(i, v+offset)
 
 
@@ -297,6 +298,6 @@ class ParameterIndexOperationsView(object):
         return self.__deepcopy__(None)
 
     def __deepcopy__(self, memo):
-        return ParameterIndexOperations(dict(self.iteritems()))
+        return ParameterIndexOperations(dict(iter(self.items())))
     pass
 

@@ -10,7 +10,7 @@ try:
     rasm_available = True
 except ImportError:
     rasm_available = False
-from scg import SCG
+from .scg import SCG
 
 class Optimizer():
     """
@@ -53,7 +53,7 @@ class Optimizer():
         self.time = str(end - start)
 
     def opt(self, f_fp=None, f=None, fp=None):
-        raise NotImplementedError, "this needs to be implemented to use the optimizer class"
+        raise NotImplementedError("this needs to be implemented to use the optimizer class")
 
     def plot(self):
         """
@@ -124,9 +124,9 @@ class opt_lbfgsb(Optimizer):
 
         opt_dict = {}
         if self.xtol is not None:
-            print "WARNING: l-bfgs-b doesn't have an xtol arg, so I'm going to ignore it"
+            print("WARNING: l-bfgs-b doesn't have an xtol arg, so I'm going to ignore it")
         if self.ftol is not None:
-            print "WARNING: l-bfgs-b doesn't have an ftol arg, so I'm going to ignore it"
+            print("WARNING: l-bfgs-b doesn't have an ftol arg, so I'm going to ignore it")
         if self.gtol is not None:
             opt_dict['pgtol'] = self.gtol
         if self.bfgs_factor is not None:
@@ -157,7 +157,7 @@ class opt_simplex(Optimizer):
         if self.ftol is not None:
             opt_dict['ftol'] = self.ftol
         if self.gtol is not None:
-            print "WARNING: simplex doesn't have an gtol arg, so I'm going to ignore it"
+            print("WARNING: simplex doesn't have an gtol arg, so I'm going to ignore it")
 
         opt_result = optimize.fmin(f, self.x_init, (), disp=self.messages,
                    maxfun=self.max_f_eval, full_output=True, **opt_dict)
@@ -185,11 +185,11 @@ class opt_rasm(Optimizer):
 
         opt_dict = {}
         if self.xtol is not None:
-            print "WARNING: minimize doesn't have an xtol arg, so I'm going to ignore it"
+            print("WARNING: minimize doesn't have an xtol arg, so I'm going to ignore it")
         if self.ftol is not None:
-            print "WARNING: minimize doesn't have an ftol arg, so I'm going to ignore it"
+            print("WARNING: minimize doesn't have an ftol arg, so I'm going to ignore it")
         if self.gtol is not None:
-            print "WARNING: minimize doesn't have an gtol arg, so I'm going to ignore it"
+            print("WARNING: minimize doesn't have an gtol arg, so I'm going to ignore it")
 
         opt_result = rasm.minimize(self.x_init, f_fp, (), messages=self.messages,
                                    maxnumfuneval=self.max_f_eval)
@@ -234,7 +234,7 @@ def get_optimizer(f_min):
     if rasm_available:
         optimizers['rasmussen'] = opt_rasm
 
-    for opt_name in optimizers.keys():
+    for opt_name in list(optimizers.keys()):
         if opt_name.lower().find(f_min.lower()) != -1:
             return optimizers[opt_name]
 

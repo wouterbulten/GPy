@@ -107,7 +107,7 @@ class Test(unittest.TestCase):
             except:
 #                 kern.psi2(self.Z, self.q_x_mean, self.q_x_variance)
 #                 sys.stdout.write("E")
-                print msg + ": not matching"
+                print(msg + ": not matching")
                 import ipdb;ipdb.set_trace()
                 pass
 
