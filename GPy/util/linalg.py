@@ -6,7 +6,7 @@
 # http://homepages.inf.ed.ac.uk/imurray2/code/tdot/tdot.py
 
 import numpy as np
-from scipy import linalg, weave
+from scipy import linalg
 import types
 import ctypes
 from ctypes import byref, c_char, c_int, c_double # TODO
